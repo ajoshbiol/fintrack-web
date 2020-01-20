@@ -1,0 +1,27 @@
+{
+  "name": "fintrack-web",
+  "version": "0.1.0",
+  "description": "Fintrack web app",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajoshbiol/fintrack-web.git"
+  },
+  "author": "Josh Biol",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajoshbiol/fintrack-web/issues"
+  },
+  "homepage": "https://github.com/ajoshbiol/fintrack-web#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-jshint": "^2.1.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-uglify": "^3.0.2",
+    "jshint": "^2.11.0"
+  }
+}
