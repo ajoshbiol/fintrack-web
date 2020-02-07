@@ -6,10 +6,66 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Fintrack</title>
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <!-- Angular Material style sheet -->
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.css">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <!-- My stylesheet -->
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
     </head>
-    <body>
+    <body ng-app="Fintrack">
+        <div ng-controller="TransactionsCtrl">
+        <md-content>
+            <md-toolbar>
+                <span flex></span>
+                <h2 class="md-toolbar-tools">Fintrack</h2>
+            </md-toolbar>
+        </md-content>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Subcategory</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Classification</th>
+                    <th scope="col">Account</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="transaction in transactions">
+                    <ltd>{{ transaction._source.date }}</td>
+                    <td>{{ transaction._source.value}}</td>
+                    <td>{{ transaction._source.category}}</td>
+                    <td>{{ transaction._source.subcategory }}</td>
+                    <td>{{ transaction._source.description }}</td>
+                    <td>{{ transaction._source.classification }}</td>
+                    <td>{{ transaction._source.account }}</td>
+                    <td>
+                        <md-button ng-click="showTransactionDialog($event, transaction)" class="md-icon-button" aria-label="editTransaction">
+                        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                        </md-button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <md-button ng-click="showTransactionDialog($event)" class="md-raised md-primary" aria-label="addTransaction">Add</md-button>
+        </div>
+        <!-- Angular Material requires Angular.js Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-messages.min.js"></script>
+        <!-- Angular Material Library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.js"></script>
+
+        <!-- Bootstrap requirements -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
         <script type="text/javascript" src="../js/all.min.js"></script>
     </body>
 </html>

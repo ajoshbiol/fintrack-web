@@ -19,7 +19,7 @@ function scripts() {
     return gulp.src('src/js/*.js')
       .pipe(concat('all.js'))
       .pipe(rename('all.min.js'))
-      .pipe(uglify())
+      //.pipe(uglify())
       .pipe(gulp.dest('./build/js'));
 }
 

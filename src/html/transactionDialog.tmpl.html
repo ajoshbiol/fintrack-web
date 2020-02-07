@@ -1,0 +1,85 @@
+<md-dialog aria-label="TransactionDialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{ title }}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()" aria-label="closeDialog">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+            </svg>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <md-content layout-padding>
+        <div>
+            <form name="TransactionForm">
+                <md-input-container>
+                <label>Date</label>
+                <md-datepicker required ng-model="currTransaction.date" aria-label="date"></md-datepicker>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                <label>Category</label>
+                <md-select required ng-model="currTransaction.category" ng-change="getSubcategories()">
+                  <md-option ng-repeat="category in categories" ng-value="category">
+                    {{category}}
+                  </md-option>
+                </md-select>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                <label>Subcategory</label>
+                <md-select ng-model="currTransaction.subcategory">
+                    <md-option ng-repeat="subcategory in subcategories" ng-value="subcategory">
+                    {{subcategory}}
+                  </md-option>
+                </md-select>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                <label>Description</label>
+                <input ng-model="currTransaction.description">
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                <label>Classification</label>
+                <md-select required ng-model="currTransaction.classification">
+                  <md-option ng-repeat="classification in classifications" ng-value="classification">
+                    {{classification}}
+                  </md-option>
+                </md-select>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                <label>Account</label>
+                <md-select required ng-model="currTransaction.account">
+                  <md-option ng-repeat="account in accounts" ng-value="account">
+                    {{account}}
+                  </md-option>
+                </md-select>
+                </md-input-container>
+
+                <md-input-container required class="md-icon-float md-block">
+                <md-icon>
+                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+                </svg>
+                </md-icon>
+                <label>Amount</label>
+                <input ng-model="currTransaction.value">
+                </md-input-container>
+            </form>
+        </div>
+        </md-content>
+        <md-dialog-actions layout="row">
+          <span flex></span>
+          <md-button ng-if="action=='Edit'" class="md-raised md-warn" ng-click="deleteTransaction()">
+          Delete
+          </md-button>
+          <md-button class="md-raised md-primary" ng-click="submitTransaction()">
+          {{ action }} 
+          </md-button>
+        </md-dialog-actions>
+    </md-dialog-content>
+</md-dialog>
