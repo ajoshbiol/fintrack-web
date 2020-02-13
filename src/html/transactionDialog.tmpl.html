@@ -16,35 +16,35 @@
             <form name="TransactionForm">
                 <md-input-container>
                 <label>Date</label>
-                <md-datepicker required ng-model="currTransaction.date" aria-label="date"></md-datepicker>
+                <md-datepicker required ng-model="transaction.date" aria-label="date"></md-datepicker>
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
                 <label>Category</label>
-                <md-select required ng-model="currTransaction.category" ng-change="getSubcategories()">
+                <md-select required ng-model="transaction.category">
                   <md-option ng-repeat="category in categories" ng-value="category">
-                    {{category}}
+                    {{ category }}
                   </md-option>
                 </md-select>
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
                 <label>Subcategory</label>
-                <md-select ng-model="currTransaction.subcategory">
-                    <md-option ng-repeat="subcategory in subcategories" ng-value="subcategory">
-                    {{subcategory}}
+                <md-select ng-model="transaction.subcategory">
+                    <md-option ng-repeat="subcategory in subcategories | filter: { 'category' : transaction.category }" ng-value="subcategory.name">
+                    {{ subcategory.name }}
                   </md-option>
                 </md-select>
                 </md-input-container>
 
                 <md-input-container class="md-block">
                 <label>Description</label>
-                <input ng-model="currTransaction.description">
+                <input ng-model="transaction.description">
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
                 <label>Classification</label>
-                <md-select required ng-model="currTransaction.classification">
+                <md-select required ng-model="transaction.classification">
                   <md-option ng-repeat="classification in classifications" ng-value="classification">
                     {{classification}}
                   </md-option>
@@ -53,7 +53,7 @@
 
                 <md-input-container class="md-block" flex-gt-sm>
                 <label>Account</label>
-                <md-select required ng-model="currTransaction.account">
+                <md-select required ng-model="transaction.account">
                   <md-option ng-repeat="account in accounts" ng-value="account">
                     {{account}}
                   </md-option>
@@ -67,7 +67,7 @@
                 </svg>
                 </md-icon>
                 <label>Amount</label>
-                <input ng-model="currTransaction.value">
+                <input required type="number" min="0" rg-model="transaction.value">
                 </md-input-container>
             </form>
         </div>
@@ -77,7 +77,7 @@
           <md-button ng-if="action=='Edit'" class="md-raised md-warn" ng-click="deleteTransaction()">
           Delete
           </md-button>
-          <md-button class="md-raised md-primary" ng-click="submitTransaction()">
+          <md-button ng-disabled="TransactionForm.$invalid" class="md-raised md-primary" ng-click="submitTransaction()">
           {{ action }} 
           </md-button>
         </md-dialog-actions>

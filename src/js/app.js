@@ -2,7 +2,7 @@ var app = angular.module('Fintrack', ['ngMaterial', 'ngMessages']);
 
 var accounts = [];
 var categories = [];
-var categoriesMap = {};
+var subcategories = [];
 var classifications = ["Essential", "Personal", "Savings", "Income"]
 
 // Function to call to init reused variables
@@ -17,10 +17,18 @@ function init($scope, $http) {
         url : serviceUrl + "/categories"
     })
     .then(function success(response) {
-        response.data.categories.forEach(function(item, index) {
-            categories.push(item._source.category);
-            categoriesMap[item._source.category] = item._source.subcategory;
+        let c = new Set();
+        response.data.categories.forEach(function(item) {
+            c.add(item._source.category);
+            item._source.subcategory.forEach(function(subcategory) {
+                var temp = {
+                    'category' : item._source.category,
+                    'name' : subcategory
+                };
+                subcategories.push(temp);
+            });
         });
+        categories = Array.from(c);
     }, function error(response) {
         console.error(response);
     });
@@ -41,7 +49,6 @@ function init($scope, $http) {
 
 // Helper function to refresh transactions
 function refreshTransactions($scope, $http) {
-    console.log('calling refresh transaction');
     getTransactions($http, $scope.pageSize, $scope.lastTs, $scope.lastId, 
         function (err, transactions) {
 
@@ -63,8 +70,6 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
     $scope.showTransactionDialog = showTransactionDialog; 
 
     function showTransactionDialog(ev, transaction) {
-        $scope.selTransaction = transaction;
-
         $mdDialog.show({
             controller: DialogController,
             templateUrl: './html/transactionDialog.tmpl.html',
@@ -72,47 +77,47 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
             targetEvent: ev,
             clickOutsideToClose: true,
             fullscreen: false,
-            scope: $scope,
-            preserveScope: true
-        })
-        .then(function(transaction) {
-            console.log(transaction);
-            if ('id' in transaction) {
-                // edit a transaction
-                if ($scope.deleteTransaction) {
-                    console.log('DELETE'); 
-                    deleteTransaction($http, transaction.id, function(err, data) {
-                        if (err) {
-                            console.error(err);
-                        }
-                        console.log(data);
-                        // Confirmation message
-                        refreshTransactions($scope, $http);
-                    });
-                }
+            locals: {
+                transaction : transaction
             }
-            else {
-                addTransaction($http, transaction, function(err, data) {
+        })
+        .then(function(data) {
+            console.log(data.transaction);
+            console.log(data.delete);
+            if (data.delete) {
+                deleteTransaction($http, data.transaction.id, function(err, response) {
                     if (err) {
                         console.error(err);
                     }
-                    console.log(data);
+                    // Confirmation message
+                    refreshTransactions($scope, $http);
+                });
+            }
+            else {
+                upsertTransaction($http, data.transaction, function(err, response) {
+                    if (err) {
+                        console.error(err);
+                    }
+                    console.log(response);
                     // Confirmation message
                     refreshTransactions($scope, $http);
                 });
             }
         }, function() {
             console.log('Exit Dialog');
-            $scope.selTransaction = null;
-            $scope.currTransaction = null;
         });
     }
 
-    function DialogController($scope, $mdDialog) {
-        if ($scope.selTransaction == null) {
+    function DialogController($scope, $mdDialog, transaction) {
+        $scope.accounts = accounts; 
+        $scope.classifications = classifications;
+        $scope.categories = categories;
+        $scope.subcategories = subcategories;
+
+        if (!transaction) {
             $scope.title = 'Add Transaction';
             $scope.action = 'Create';
-            $scope.currTransaction = {
+            $scope.transaction = {
                 'date' : null,
                 'category' : null,
                 'subcategory' : null,
@@ -125,50 +130,42 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
         else {
             $scope.title = 'Edit Transaction'
             $scope.action = 'Edit';
-            $scope.currTransaction = {
-                'date' : $scope.selTransaction._source.date,
-                'category' : $scope.selTransaction._source.category,
-                'subcategory' : $scope.selTransaction._source.subcategory,
-                'description' : $scope.selTransaction._source.description,
-                'classification' : $scope.selTransaction._source.classification,
-                'account' : $scope.selTransaction._source.account,
-                'value' : $scope.selTransaction._source.value,
-                'id' : $scope.selTransaction._id
+            $scope.transaction = {
+                'date' : transaction._source.date,
+                'category' : transaction._source.category,
+                'subcategory' : transaction._source.subcategory,
+                'description' : transaction._source.description,
+                'classification' : transaction._source.classification,
+                'account' : transaction._source.account,
+                'value' : transaction._source.value,
+                'id' : transaction._id
             };
         }
 
-        $scope.accounts = accounts; 
-        $scope.categories = categories;
-        $scope.classifications = classifications;
-
-        $scope.getSubcategories = function() {
-            $scope.subcategories = categoriesMap[$scope.currTransaction.category];
-        };
-
-        if ($scope.currTransaction.category != null) {
-            $scope.getSubcategories();
-        }
-
         $scope.cancel = function() {
-            console.log($scope.input);
             $mdDialog.cancel();
         }
 
         $scope.submitTransaction = function() {
-            $mdDialog.hide($scope.currTransaction); 
-            $scope.selTransaction = null;
-            $scope.currTransaction = null;
+            var temp = {
+                'transaction' : $scope.transaction,
+                'delete' : false
+            }
+            $mdDialog.hide(temp); 
         }
 
         $scope.deleteTransaction = function() {
-            $scope.deleteTransaction = true;
-            $mdDialog.hide($scope.currTransaction); 
+            var temp = {
+                'transaction' : $scope.transaction,
+                'delete' : true
+            }
+            $mdDialog.hide(temp); 
         }
     }
 }]);
 
-// Function to add a transaction
-function addTransaction($http, transaction, callback) {
+// Function to upsert a transaction
+function upsertTransaction($http, transaction, callback) {
     $http({
         method : 'POST',
         url : serviceUrl + '/transactions',
@@ -211,9 +208,4 @@ function getTransactions($http, size, ts, id, callback) {
     }, function error(response) {
         return callback(response);
     });
-}
-
-// Function to edit a transaction
-function editTransaction($scope, $http, transaction, callback) {
-    //console.log(transaction);
 }
