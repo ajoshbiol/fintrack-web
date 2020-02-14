@@ -83,7 +83,6 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
         })
         .then(function(data) {
             console.log(data.transaction);
-            console.log(data.delete);
             if (data.delete) {
                 deleteTransaction($http, data.transaction.id, function(err, response) {
                     if (err) {
@@ -129,7 +128,7 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
         }
         else {
             $scope.title = 'Edit Transaction'
-            $scope.action = 'Edit';
+            $scope.action = 'Save';
             $scope.transaction = {
                 'date' : transaction._source.date,
                 'category' : transaction._source.category,

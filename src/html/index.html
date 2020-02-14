@@ -11,6 +11,7 @@
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <!-- My stylesheet -->
+        <link rel="stylesheet" href="./css/index.css">
     </head>
     <body ng-app="Fintrack">
         <div ng-controller="TransactionsCtrl">
@@ -20,6 +21,7 @@
                 <h2 class="md-toolbar-tools">Fintrack</h2>
             </md-toolbar>
         </md-content>
+        <div id="transactions">
         <table class="table">
             <thead>
                 <tr>
@@ -51,7 +53,10 @@
                 </tr>
             </tbody>
         </table>
-        <md-button ng-click="showTransactionDialog($event)" class="md-raised md-primary" aria-label="addTransaction">Add</md-button>
+        <div id="addButton">
+            <md-button ng-click="showTransactionDialog($event)" class="md-raised md-primary" aria-label="addTransaction">Add</md-button>
+        </div>
+        </div>
         </div>
         <!-- Angular Material requires Angular.js Libraries -->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>

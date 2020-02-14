@@ -30,11 +30,18 @@ function html() {
         .pipe(gulp.dest('./build/html'));
 }
 
+// Handle my css
+function css() {
+    return gulp.src('./src/css/*.css')
+        .pipe(gulp.dest('./build/css'));
+}
+
 function watch() {
     gulp.watch('./src/js/configs/*.js', configs);
     gulp.watch('./src/js/*.js', scripts);
     gulp.watch('./src/html/*.html', html);
+    gulp.watch('./src/css/*.css', css);
 }
 
 // Default Task
-gulp.task('default', gulp.series(configs, scripts, html, watch));
+gulp.task('default', gulp.series(configs, scripts, html, css, watch));

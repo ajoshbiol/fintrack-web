@@ -67,14 +67,14 @@
                 </svg>
                 </md-icon>
                 <label>Amount</label>
-                <input required type="number" min="0" rg-model="transaction.value">
+                <input required type="number" ng-model="transaction.value">
                 </md-input-container>
             </form>
         </div>
         </md-content>
         <md-dialog-actions layout="row">
           <span flex></span>
-          <md-button ng-if="action=='Edit'" class="md-raised md-warn" ng-click="deleteTransaction()">
+          <md-button ng-if="action=='Save'" class="md-raised md-warn" ng-click="deleteTransaction()">
           Delete
           </md-button>
           <md-button ng-disabled="TransactionForm.$invalid" class="md-raised md-primary" ng-click="submitTransaction()">
