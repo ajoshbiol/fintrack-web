@@ -4,12 +4,12 @@ var accounts = [];
 var categories = [];
 var subcategories = [];
 var classifications = ["Essential", "Personal", "Savings", "Income"]
+var markers = [];
 
 // Function to call to init reused variables
 function init($scope, $http) {
+    $scope.currPage = null;
     $scope.pageSize = 10;
-    $scope.lastTs = null;
-    $scope.lastId = null;
 
     // Get categories
     $http({
@@ -47,16 +47,52 @@ function init($scope, $http) {
     });
 }
 
-// Helper function to refresh transactions
-function refreshTransactions($scope, $http) {
-    getTransactions($http, $scope.pageSize, $scope.lastTs, $scope.lastId, 
+function getNextTransactions($scope, $http) {
+    var marker = null;
+    if ($scope.currPage !== null || $scope.currPage > 0) {
+       marker = markers[$scope.currPage]; 
+    }
+
+    getTransactions($http, $scope.pageSize, marker, 
         function (err, transactions) {
 
         if (err) {
             console.error(err);
         } 
+        else {
+            $scope.transactions = transactions;
+            if ($scope.currPage !== null) {
+                $scope.currPage++;
+            }
+            else {
+                $scope.currPage = 0;
+            }
+            if (markers[$scope.currPage] == undefined) {
+                markers.push(transactions[transactions.length - 1]);
+            }
+        }
+    });
+}
 
-        $scope.transactions = transactions;
+function getPrevTransactions($scope, $http) {
+    var marker = null;
+    if ($scope.currPage > 1) {
+       marker = markers[$scope.currPage - 2]; 
+    }
+
+    getTransactions($http, $scope.pageSize, marker, 
+        function (err, transactions) {
+
+        if (err) {
+            console.error(err);
+        } 
+        else {
+            $scope.transactions = null;
+            $scope.transactions = transactions;
+            if ($scope.currPage > 0) {
+                $scope.currPage--;
+            }
+        }
     });
 }
 
@@ -65,7 +101,15 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
     '$mdDialog', function($scope, $http, $interval, $mdDialog) {
 
     init($scope, $http);
-    refreshTransactions($scope, $http);
+    getNextTransactions($scope, $http);
+
+    $scope.getNextTransactions = function() {
+        getNextTransactions($scope, $http);
+    }
+
+    $scope.getPrevPageTransactions = function() {
+        getPrevTransactions($scope, $http);
+    }
 
     $scope.showTransactionDialog = showTransactionDialog; 
 
@@ -82,7 +126,6 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
             }
         })
         .then(function(data) {
-            console.log(data.transaction);
             if (data.delete) {
                 deleteTransaction($http, data.transaction.id, function(err, response) {
                     if (err) {
@@ -97,7 +140,6 @@ app.controller('TransactionsCtrl', ['$scope', '$http', '$interval',
                     if (err) {
                         console.error(err);
                     }
-                    console.log(response);
                     // Confirmation message
                     refreshTransactions($scope, $http);
                 });
@@ -192,12 +234,13 @@ function deleteTransaction($http, id, callback) {
 }
 
 // Function to retrieve transactions from Fintrack service
-function getTransactions($http, size, ts, id, callback) {
+function getTransactions($http, size, last, callback) {
 
     var query = "?size=" + size;
-    if (ts !== null && id !== null) {
-        query += "&ts=" + ts + "&id=" + id;
+    if (last !== null) {
+        query += "&ts=" + last.sort[0] + "&id=" + last.sort[1];
     }
+    console.log(query);
     $http({
         method : 'GET',
         url : serviceUrl + '/transactions' + query
